@@ -70,6 +70,9 @@ At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praese
 
 ---
 
+
+
+
 # Design process
 Initially, the goal was to power and control 6-8 tubes (up to 88 cathodes) which very quickly became a routing nightmare. Also the lebensraum cost accumulated very quickly so small pcbs became a necessity. 
 But first things first. 
@@ -85,11 +88,33 @@ For dual tube version:
 7.  
 
 ## First try
-Ok. so let's try single phase boost topology in Constant Current Mode. 
+Ok. so let's try single phase boost topology in Constant Current Mode. In that case helpful can be ic dedicated to boost converter control such as UCC38xx family
 ![Tube holder back](NixieDriverModule_SchBoost.png)
 
 ### Duty cycle
 DC needed is given by
 $$ U_{out} = \frac{U_{in}}{1-D} $$
 
-TODO:  LaTeX does not work in MD?!
+TODO:  y LaTeX does not work in md?!
+
+
+![](NixieDriverModule_AllLayers.png)
+
+![](NixieDriverModule_SchDriver.png)
+![](NixieDriverModule_SchCtrlNote.png)
+![](NixieDriverModule_SchIO.png)
+![](NixieDriverModule_SchOuts.png)
+![](NixieDriverModule_SchDemux.png)
+![](NixieDriverModule_SchTransArray.png)
+
+![](NixieDriverTwoTubes_ANGLE.png)
+
+![](NixieDriverEvenSmallerNoDot_ANGLE.png)
+![](NixieDriverEvenSmallerNoDot_BACK_blank.png)
+![](NixieDriverEvenSmallerNoDot_FRONT_blank.png)
+![](NixieDriverEvenSmallerNoDot_LEFT.png)
+![](NixieDriverEvenSmallerNoDot_TOP.png)
+
+![](NixieDriverModule_DIMs.png)
+![](NixieDriverModule_FabBack.png)
+![](NixieDriverModule_FabFront.png)
