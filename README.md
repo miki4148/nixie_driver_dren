@@ -3,6 +3,14 @@
 
 A versatile and customizable driver for Nixie tube clocks. This project focuses on developing hardware and firmware to drive Nixie tubes, allowing you to create various retro-style displays with ease.
 
+This math is inline $`a^2+b^2=c^2`$.
+
+This is on a separate line
+
+```math
+a^2+b^2=c^2
+```
+
 ---
 
 ## Features
@@ -69,7 +77,7 @@ Power the circuit using the recommended voltage specifications.
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. 
 
 ---
-
+---
 
 
 
@@ -80,7 +88,7 @@ But first things first.
 ## Assumptions
 For dual tube version:
 1. DC-DC step-up converter from 12V in to ~170V out;
-2. Switching frequency: ~100kHz
+2. Switching frequency: ~110kHz
 3. Output regulation method: PWM 
 4. Power delivered to the load: 2.04mW (4 symbols, up to 3mA per cathode at 170V);
 5. Small size: 50mm x 50mm boards (cheap, easy to throw away)
@@ -88,20 +96,64 @@ For dual tube version:
 7.  
 
 ## First try
-Ok. so let's try single phase boost topology in Constant Current Mode. In that case helpful can be ic dedicated to boost converter control such as UCC38xx family
+Ok. so let's try single phase boost topology in Constant Current Mode. 
 ![Tube holder back](NixieDriverModule_SchBoost.png)
+
+In that case helpful can be ic dedicated to boost converter control such as UCC38xx family
+![](NixieDriverModule_SchDriver.png)
 
 ### Duty cycle
 DC needed is given by
-$$ U_{out} = \frac{U_{in}}{1-D} $$
+```math
+U_{OUT} = \frac{U_{IN}}{1-D}  \implies  D = 1 - \frac{12V}{170.92V} \approx 0.9298
+```
+so half of the UCC38xx family is already out. 
+
+Let's see: 
+<!-- <img src="NixieDriverModule_UCC38xxComp.png" alt="UCC38xx family comparison" > -->
+![](NixieDriverModule_SchCtrlNote.png)
+After DC calculation, only '00, '02 and '03 are left. 
+
+As input voltage is 12V, let's look at histeretic UnderVoltage LockOut thresholds. '02 version will never even turn on and '03's range is far too low to be usable. That leaves '00 as the last chip standing. 
+
+
+### Inductor
+Assuming 75% efficiency, mean input current $` I_{IN,AVG} = 12mA / 0.75 = 16mA`$. 
+
+For continuous inductor current, half of peak-to-peak value of the ripple shouldn't be bigger than that mean.
+
+As voltage across the inductor $` U_{L} = L \frac{\Delta i}{t_{ON}} `$ and duty cycle $` D = \frac{t_{ON}}{T} `$, ripple current through the inductor is: 
+```math
+\Delta i = \frac{U_{L} D}{f \cdot L} = \frac{12V \cdot 0.9298}{110k \cdot }
+```
+
+### Diode
+[ES1D](https://www.onsemi.com/pdf/datasheet/es1d-d.pdf) (SMA) was chosen as a cheap yet fast and powerful diode for its 
+- **200 V** Maximum Repetitive Reverse Voltage and
+- **1 A** Average Rectified Forward Current with
+- **30 A** pulse capability. 
+
+### Switch
+[BSC900N20NS3 G](https://www.infineon.com/dgdl/Infineon-BSC900N20NS3-DS-v02_02-en.pdf?fileId=db3a30432ad629a6012b144f6b0619db) (PG-TDSON-8) was deemed worthy: 
+
+- **200 V** $`V_{DS}`$ 
+- **90 mΩ** max $`R_{DS(on)}`$ 
+- **15.2 A** $`I_{D}`$ 
+
+
+### Output capacitor
+$`2 \mu F`$ 
+
+
+
 
 TODO:  y LaTeX does not work in md?!
 
 
 ![](NixieDriverModule_AllLayers.png)
 
-![](NixieDriverModule_SchDriver.png)
-![](NixieDriverModule_SchCtrlNote.png)
+
+
 ![](NixieDriverModule_SchIO.png)
 ![](NixieDriverModule_SchOuts.png)
 ![](NixieDriverModule_SchDemux.png)
