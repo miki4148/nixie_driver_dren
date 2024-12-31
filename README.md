@@ -51,11 +51,11 @@ Holes in pcb in the middle of the tubes' footprints are an answer to the glass s
 Other holes increase versatility in case someone wished to insert leds in them to achieve obligatory flashing in the space between glowing numerals. 
 
 ![Tube holder back](/files/NixieDriverTwoTubes/img/NixieDriverTwoTubes_BACK.png)
-Note the attempt to match writing on the pcb to native Muttersprache of the late glassblowers responsible for birthing of IN-12s
+Note the attempt to match writing on the pcb to native Muttersprache of the late glassblowers responsible for birthing of IN-12s.
 
 
 ---
-
+<!-- 
 ## Software Setup
 
 ### Prerequisites
@@ -68,9 +68,9 @@ Power the circuit using the recommended voltage specifications.
 
 At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. 
 
----
----
 
+---
+-->
 
 
 # Design process
@@ -89,7 +89,7 @@ For dual tube version:
 
 ## First try
 Ok. so let's try single phase boost topology in Constant Current Mode. 
-![Tube holder back](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png)
+![Boost converter schematic](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png)
 
 In that case helpful can be ic dedicated to boost converter control such as UCC38xx family
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDriver.png)
@@ -136,7 +136,9 @@ As voltage across the inductor $` U_{L} = L \frac{\Delta i}{t_{ON}} `$ and duty 
 ### Output capacitor
 $`2 \mu F`$ 
 
+## Simulation
 
+![](/files/NixieDriverModule_BoostPlecs.png)
 
 
 TODO:  y LaTeX does not work in md?!
