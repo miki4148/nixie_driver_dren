@@ -1,15 +1,7 @@
 # Modular nixie tube clock system
-![Project overview](project_overview.png)
+![Project overview](files/project_overview.png)
 
 A versatile and customizable driver for Nixie tube clocks. This project focuses on developing hardware and firmware to drive Nixie tubes, allowing you to create various retro-style displays with ease.
-
-This math is inline $`a^2+b^2=c^2`$.
-
-This is on a separate line
-
-```math
-a^2+b^2=c^2
-```
 
 ---
 
@@ -41,24 +33,24 @@ a^2+b^2=c^2
 The circuit consists of a boost converter which steps up the supply voltage to 170VDC. Such voltage is sufficient for ionization of the low-pressure gas mixture inside the tube at room temperature (without the need of white-hot cathode). 
 
 After long battle against procrastination, layout for the driver board emerged. Detailed description and schematic will follow in subsequent sections.
-![Driver front](NixieDriverEvenSmallerNoDot_FRONT.png)
+![Driver front](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_FRONT.png)
 Insulation Displacement Cable connector was chosen as the main medium of communication w/ the micro. This was a direct result of author's recent traumatic experiances and many hours of fruitless work trying to wire previous device using old solid-copper wires which were nearly unsolderable and brittle beyond comprehension. So ribbon cable it is. 
 Alternative and secondary I/Os were banished to ordinary pin headers for simplicity.  
 
 The other half of the circuit is basically massive demultiplexing and buffering array. The good news is that not every cathode needs to be operated idependently but rather only one (two maybe) digit per tube lights up at one time. This points to BCD (binary-coded decimal) converters (4028 IC used) and a simple buffering for commas as they may have to be used independently. 
 
-![Driver back](NixieDriverEvenSmallerNoDot_BACK.png)
+![Driver back](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_BACK.png)
 Note author's love for hardcore poetry insertion.
 
 
 ## Dual tube adapter
 Someone must hold the tubes in place so here it is:
-![Tube holder front](NixieDriverTwoTubes_FRONT.png)
+![Tube holder front](/files/NixieDriverTwoTubes/img/NixieDriverTwoTubes_FRONT.png)
 
 Holes in pcb in the middle of the tubes' footprints are an answer to the glass short feature at the base, a remainder after sealing process. 
 Other holes increase versatility in case someone wished to insert leds in them to achieve obligatory flashing in the space between glowing numerals. 
 
-![Tube holder back](NixieDriverTwoTubes_BACK.png)
+![Tube holder back](/files/NixieDriverTwoTubes/img/NixieDriverTwoTubes_BACK.png)
 Note the attempt to match writing on the pcb to native Muttersprache of the late glassblowers responsible for birthing of IN-12s
 
 
@@ -97,10 +89,10 @@ For dual tube version:
 
 ## First try
 Ok. so let's try single phase boost topology in Constant Current Mode. 
-![Tube holder back](NixieDriverModule_SchBoost.png)
+![Tube holder back](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png)
 
 In that case helpful can be ic dedicated to boost converter control such as UCC38xx family
-![](NixieDriverModule_SchDriver.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDriver.png)
 
 ### Duty cycle
 DC needed is given by
@@ -111,7 +103,7 @@ so half of the UCC38xx family is already out.
 
 Let's see: 
 <!-- <img src="NixieDriverModule_UCC38xxComp.png" alt="UCC38xx family comparison" > -->
-![](NixieDriverModule_SchCtrlNote.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchCtrlNote.png)
 After DC calculation, only '00, '02 and '03 are left. 
 
 As input voltage is 12V, let's look at histeretic UnderVoltage LockOut thresholds. '02 version will never even turn on and '03's range is far too low to be usable. That leaves '00 as the last chip standing. 
@@ -150,23 +142,23 @@ $`2 \mu F`$
 TODO:  y LaTeX does not work in md?!
 
 
-![](NixieDriverModule_AllLayers.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_AllLayers.png)
 
 
 
-![](NixieDriverModule_SchIO.png)
-![](NixieDriverModule_SchOuts.png)
-![](NixieDriverModule_SchDemux.png)
-![](NixieDriverModule_SchTransArray.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchIO.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchOuts.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDemux.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchTransArray.png)
 
-![](NixieDriverTwoTubes_ANGLE.png)
+![](img/NixieDriverTwoTubes_ANGLE.png)
 
-![](NixieDriverEvenSmallerNoDot_ANGLE.png)
-![](NixieDriverEvenSmallerNoDot_BACK_blank.png)
-![](NixieDriverEvenSmallerNoDot_FRONT_blank.png)
-![](NixieDriverEvenSmallerNoDot_LEFT.png)
-![](NixieDriverEvenSmallerNoDot_TOP.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_ANGLE.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_BACK_blank.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_FRONT_blank.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_LEFT.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_TOP.png)
 
-![](NixieDriverModule_DIMs.png)
-![](NixieDriverModule_FabBack.png)
-![](NixieDriverModule_FabFront.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_DIMs.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FabBack.png)
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FabFront.png)
