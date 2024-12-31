@@ -89,36 +89,36 @@ For dual tube version
 4. Power delivered to the load: 2.04mW (4 symbols, up to 3mA per cathode at 170V);
 5. Small size: 50mm x 50mm boards (cheap, easy to throw away)
 6. 22 cathodes, 2 out of which will stay on and 2 decimal points w/ independent control
-7.  
 
 ## First try
 
 Ok. so let's try single phase boost topology in Constant Current Mode.
 ![Boost converter schematic](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png)
 
-In that case helpful can be ic dedicated to boost converter control such as UCC38xx family
+In that case helpful can be ic dedicated to boost converter control such as [UCC38xx](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family
+
 ![Driver schematic](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDriver.png)
 
 ### Duty cycle
 
-DC needed is given by
+Assuming 80% efficiency, DC needed is given by 
 
 ```math
-U_{OUT} = \frac{U_{IN}}{1-D}- V_{F}  \implies  D = 1 - \frac{12V}{170.92V} \approx 0.9298
+U_{OUT} = \frac{U_{IN} \cdot \eta}{1-D}  \implies  D = 1 - \frac{12V \cdot 0.8}{170V} \approx 0.944
 ```
 
-so half of the UCC38xx family is already out.
+so half of the [UCC38xx](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family is already out.
 
 Let's see:
 <!-- <img src="NixieDriverModule_UCC38xxComp.png" alt="UCC38xx family comparison" > -->
 ![UCC38XX family](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_UCC38xxComp.png)
 After DC calculation, only '00, '02 and '03 are left. As input voltage is 12V, let's look at histeretic UnderVoltage LockOut thresholds. '02 version will never even turn on and '03's UVLO range is far too low to be usable.
 
-That leaves '00 as the last chip standing.
+That leaves [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) as the last chip standing.
 
 ### Oscillator
 
-As described in UCC3800's datasheet, the frequency of operation is set by RC constant, so to achieve 110kHz we need
+As described in [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf)'s datasheet, the frequency of operation is set by RC constant, so to achieve 110kHz we need
 
 ```math
 f = \frac{1.5}{RC} = \frac{1.5}{41.2k \Omega \cdot 330pF} \approx 110.33kHz
@@ -126,19 +126,27 @@ f = \frac{1.5}{RC} = \frac{1.5}{41.2k \Omega \cdot 330pF} \approx 110.33kHz
 
 ### Inductor
 
-Assuming 75% efficiency, mean input current $` I_{IN,AVG} = 12 mA / 0.75 = 16 mA`$.
+Assuming 80% efficiency, mean input current $` I_{IN,AVG} = 12 mA / 0.75 = 16 mA`$.
+
+```math
+\Delta i_{L} \approx (0.2 \; to \; 0.4) \cdot I_{OUT,MAX} \cdot \frac{U_{OUT}}{U_{IN}} = [ , ]
+```
+
+```math
+L = \frac{U_{IN} \cdot (U_{OUT} - U_{IN}) }{ 2 \cdot f \cdot I_{OUT}} \approx 223 \mu H \implies 330 \mu H
+```
 
 For continuous inductor current, half of peak-to-peak value of the ripple shouldn't be bigger than that mean. The minimum inductance is given by:
 
 ```math
-L \gt \frac{D \cdot V_{IN} \cdot (1-D) }{ 2 \cdot f \cdot I_{OUT}} \approx 223 \mu H \implies 330 \mu H
+L \gt \frac{D \cdot U_{IN} \cdot (1-D) }{ 2 \cdot f \cdot I_{OUT}} \approx 223 \mu H \implies 330 \mu H
 ```
 
 
 As voltage across the inductor $` U_{L} = L \cdot \frac{\Delta i_{L}}{t_{ON}} `$ and duty cycle $` D = \frac{t_{ON}}{T} = t_{ON} \cdot f `$, ripple current through the inductor is:
 
 ```math
-\Delta i_{L} = \frac{U_{L} D}{f \cdot L} = \frac{12V \cdot 0.9298}{110.33kHz \cdot 330 \mu H} \approx 31 mA
+\Delta i_{L} = \frac{U_{L} D}{f \cdot L} = \frac{12V \cdot 0.944}{110.33kHz \cdot 330 \mu H} \approx 307.3 mA
 ```
 
 ### Diode
