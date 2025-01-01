@@ -106,28 +106,30 @@ But first things first.
 
 For dual tube version
 
-1. DC-DC step-up converter from 12V in to ~170V out;
-2. Switching frequency: ~110kHz
-3. Output regulation method: PWM 
-4. Power delivered to the load: 2.04mW (4 symbols, up to 3mA per cathode at 170V);
+1. step-up converter from regulated **12VDC** in to **170VDC** out;
+2. Switching frequency: sth like **110kHz**
+3. Output regulation method: **PWM**
+4. Power delivered to the load: **2.04mW** (4 symbols, up to 3mA per cathode at 170V);
 5. Small size: 50mm x 50mm boards (cheap, easy to throw away)
-6. 22 cathodes, 2 out of which will stay on and 2 decimal points w/ independent control
+6. 22 cathodes, 2 out of which will stay on and **2 decimal points w/ independent control**
 
 ## First try
 
 Ok. so let's try single phase boost topology in Constant Current Mode.
 ![Boost converter schematic](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png)
 
-In that case helpful can be ic dedicated to boost converter control such as [UCC38xx](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family
+In that case helpful can be ic dedicated to boost converter control such as [UCC38xx](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family from TI:
 
 ![Driver schematic](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDriver.png)
 
-### Duty cycle
+---
+
+### Duty cycle and PWM Controller
 
 Assuming 80% efficiency, DC needed is given by 
 
 ```math
-U_{OUT} = \frac{U_{IN} \cdot \eta}{1-D}  \implies  D = 1 - \frac{12V \cdot 0.8}{170V} \approx 0.944
+U_{OUT} = \frac{U_{IN} \cdot \eta}{1-D}  \implies  D = 1 - \frac{12V \cdot 0.8}{170V} \approx \mathbf{0.944}
 ```
 
 so half of the [UCC38xx](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family is already out.
@@ -137,53 +139,69 @@ Let's see:
 ![UCC38XX family](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_UCC38xxComp.png)
 After DC calculation, only '00, '02 and '03 are left. As input voltage is 12V, let's look at histeretic UnderVoltage LockOut thresholds. '02 version will never even turn on and '03's UVLO range is far too low to be usable.
 
-That leaves [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) as the last chip standing.
+> That leaves [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) as the last chip standing.
+
+---
 
 ### Oscillator
 
 As described in [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf)'s datasheet, the frequency of operation is set by RC constant, so to achieve 110kHz we need
 
 ```math
-f = \frac{1.5}{RC} = \frac{1.5}{41.2k \Omega \cdot 330pF} \approx 110.33kHz
+f = \frac{1.5}{RC} = \frac{1.5}{\mathbf{41.2k \Omega} \cdot \mathbf{330pF}} \approx 110.33kHz
 ```
+
+---
 
 ### Inductor
 
-Assuming 80% efficiency, mean input current
+Mean output current:
 
 ```math
-P_{IN} \cdot 0.8 = 12 mA \cdot 170V \implies I_{IN} = \frac{12 mA \cdot 170V}{0.8 \cdot 12V} = 212.5 mA
+I_{OUT} = \frac{1}{T} \int_{0}^{T} i_{OUT} \, dt = \frac{1}{T} (\frac{1}{2} \Delta i_{OUT} (1-D)T + i_{MIN}T) = \frac{1}{2} \Delta i_{OUT} (1-D) + i_{MIN}
 ```
-
-```math
-I_{OUT} = \frac{1}{T} \int_{0}^{T} i \, dt = \frac{12 mA \cdot 170V}{0.8 \cdot 12V} = 212.5 mA
-```
-
-
-```math
-\Delta i_{L} \approx (0.2 \; to \; 0.4) \cdot I_{OUT,MAX} \cdot \frac{U_{OUT}}{U_{IN}} = [ , ]
-```
-
-```math
-L = \frac{U_{IN} \cdot (U_{OUT} - U_{IN}) }{ 2 \cdot f \cdot I_{OUT}} \approx 223 \mu H \implies 330 \mu H
-```
-
-For continuous inductor current, half of peak-to-peak value of the ripple shouldn't be bigger than that mean. The minimum inductance is given by:
-
-```math
-L \gt \frac{D \cdot U_{IN} \cdot (1-D) }{ 2 \cdot f \cdot I_{OUT}} \approx 223 \mu H \implies 330 \mu H
-```
-
 
 As voltage across the inductor $` U_{L} = L \cdot \frac{\Delta i_{L}}{t_{ON}} `$ and duty cycle $` D = \frac{t_{ON}}{T} = t_{ON} \cdot f `$, ripple current through the inductor is:
 
 ```math
-\Delta i_{L} = \frac{U_{L} D}{f \cdot L} = \frac{12V \cdot 0.944}{110.33kHz \cdot 330 \mu H} \approx 307.3 mA
+\Delta i_{L} = \frac{U_{L} D}{f \cdot L}
 ```
+
+so the mean output current:
+
+```math
+I_{OUT} = \frac{U_{IN} D (1-D)}{2 f L}  + i_{MIN}
+```
+
+For continuous inductor current, **minimum current must be positive**. The lower bound on inductance is then given by:
+
+```math
+L \gt \frac{D \cdot U_{IN} \cdot (1-D) }{ 2 \cdot f \cdot I_{OUT}} \approx 239.6 \mu H \implies \mathbf{L = 330 \mu H}
+```
+
+Inductor's ripple current:
+
+```math
+\Delta i_{L} = \frac{U_{L} D}{f \cdot L} = \frac{12V \cdot 0.944}{110.33kHz \cdot 330 \mu H} \approx 311.1 mA
+```
+
+Maximum current through the inductor:
+
+```math
+\mathbf{i_{L, MAX}} = i_{min} + \Delta i_{L} = I_{OUT} - \frac{1}{2} \Delta i_{L}(1 - D) + \Delta i_{L} \approx \mathbf{314.39 mA}
+```
+is also the maximum current through the switch.
+
+> [DE1207-330](https://www.tme.eu/Document/d1f8b47d020ebf11f3b92c6891638dfa/de.pdf) shielded inductor from FERROCORE's "SMD Power Coil" family was chosen
+- **330 μH**
+- **471 mΩ** DC resistance
+- 1207 package (12mm x 12mm x 8mm)
+
+---
 
 ### Diode
 
-[ES1D](https://www.onsemi.com/pdf/datasheet/es1d-d.pdf) (SMA) was chosen as a cheap yet fast and powerful diode for its
+> [ES1D](https://www.onsemi.com/pdf/datasheet/es1d-d.pdf) (SMA) was chosen as a cheap yet fast and powerful diode for its
 
 - **200 V** Maximum Repetitive Reverse Voltage and
 - **1 A** Average Rectified Forward Current with
@@ -194,14 +212,33 @@ Note the **0.92 V** Forward Voltage @ 1 A
 `This is the moment to point out the annoyingly circular character of such design methods. 
 To choose the diode, it is necessary to know the max current it will have to handle but the value of its forward voltage drop is needed much earlier in duty cycle calculation. Expect further complaining about this in the upcoming sections.`
 
+---
+
 ### Switch
 
-[BSC900N20NS3 G](https://www.infineon.com/dgdl/Infineon-BSC900N20NS3-DS-v02_02-en.pdf?fileId=db3a30432ad629a6012b144f6b0619db) (PG-TDSON-8) was deemed worthy:
+> [BSC900N20NS3 G](https://www.infineon.com/dgdl/Infineon-BSC900N20NS3-DS-v02_02-en.pdf?fileId=db3a30432ad629a6012b144f6b0619db) (PG-TDSON-8) was deemed worthy:
 
 - **200 V** $`V_{DS}`$
 - **90 mΩ** max $`R_{DS(on)}`$
 - **15.2 A** $`I_{D}`$
 
+---
+
+### Output capacitor
+To filter the output signal, let's use capacitance of
+
+```math
+\Delta U_{OUT} = \frac{D \cdot I_{OUT}}{C_{OUT}} \implies \mathbf{C_{OUT}} = \frac{0.9298 \cdot 12 mA}{0.1 V} \approx \mathbf{1.01 \mu F}
+```
+
+> [C5750X7R2E105K230KA](https://www.tme.eu/Document/3927045cdc4027c1c18ebf074683adec/c-series.pdf) (2220) from TDK's "C series"
+- **1μF** ± 10%
+- **250V** rated DC voltage
+- **X7R** dielectric material
+
+Note the ±15% temperature coefficient (capacitance change) over the whole temp. range ( –55 to +125 °C )
+
+---
 
 ### Current limiting
 A 1-V (typical) cycle-by-cycle current limit threshold is incorporated into the UCC280x family. Resistors R14
@@ -213,17 +250,17 @@ max 323.9mA over 0.1R is 32.39mV so 967.61mV offset is needed
 ```math
 V_{OFFSET} = \frac{R15}{R14 + R15} \cdot V_{REF}
 ```
+TODO: resistor values
 
-
-### Output capacitor
-
-```math
-\Delta U_{OUT} = \frac{D \cdot I_{OUT}}{C_{OUT}} \implies C_{OUT} = \frac{0.9298 \cdot 12 mA}{0.1 V} \approx 1.01 \mu F
-```
+---
 
 ## Simulation
 
 ![](/files/NixieDriverModule_BoostPlecs.png)
+
+---
+
+## Miscellaneous
 
 TODO:  y LaTeX does not work in md?!
 
