@@ -151,6 +151,8 @@ As described in [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf)'s datas
 f = \frac{1.5}{RC} = \frac{1.5}{\mathbf{41.2k \Omega} \cdot \mathbf{330pF}} \approx 110.33kHz
 ```
 
+> Probably some **C0G** cap and a somewhat stable ±1% resistor
+
 ---
 
 ### Inductor
