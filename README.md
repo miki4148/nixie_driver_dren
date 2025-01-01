@@ -240,7 +240,7 @@ Note the ±15% temperature coefficient (capacitance change) over the whole temp.
 
 ---
 
-### Current limiting
+### Current sensing network
 A 1-V (typical) cycle-by-cycle current limit threshold is incorporated into the UCC280x family. Resistors R14
 and R15 bias the actual current sense resistor voltage up, allowing a small current sense amplitude to be used. 
 
@@ -254,9 +254,23 @@ TODO: resistor values
 
 ---
 
+### Voltage feedback loop
+
+TODO: 
+
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchCtrlNote.png)
+
+---
+
 ## Simulation
 
+Quick and idealized circuit, using values calculated above, was simulated in [PLECS](https://www.plexim.com/products/plecs) - simulation platform for power electronic systems. 
+
+After some time, our system reached steady state which is demonstrated below:
+
 ![](/files/NixieDriverModule_BoostPlecs.png)
+
+As we can see, all noise from FET turning on/off was omitted as well as parasitic capacitances all across the system. This simulation is only a means of reassurance that calculations weren't too far off and so the project can advance into 'spending money' stage.
 
 ---
 
@@ -271,7 +285,7 @@ TODO:  y LaTeX does not work in md?!
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDemux.png)
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchTransArray.png)
 
-![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchCtrlNote.png)
+
 
 ![](img/NixieDriverTwoTubes_ANGLE.png)
 
