@@ -126,7 +126,16 @@ f = \frac{1.5}{RC} = \frac{1.5}{41.2k \Omega \cdot 330pF} \approx 110.33kHz
 
 ### Inductor
 
-Assuming 80% efficiency, mean input current $` I_{IN,AVG} = 12 mA / 0.75 = 16 mA`$.
+Assuming 80% efficiency, mean input current
+
+```math
+P_{IN} \cdot 0.8 = 12 mA \cdot 170V \implies I_{IN} = \frac{12 mA \cdot 170V}{0.8 \cdot 12V} = 212.5 mA
+```
+
+```math
+I_{OUT} = \frac{1}{T} \int_{0}^{T} i \, dt = \frac{12 mA \cdot 170V}{0.8 \cdot 12V} = 212.5 mA
+```
+
 
 ```math
 \Delta i_{L} \approx (0.2 \; to \; 0.4) \cdot I_{OUT,MAX} \cdot \frac{U_{OUT}}{U_{IN}} = [ , ]
