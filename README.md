@@ -29,7 +29,7 @@ A versatile and customizable driver for Nixie tube clocks. This project focuses 
 8. Resistors, Capacitors, Connectors etc.
 9. PCB (Custom-designed for this project)
 
-## Driver
+## Driver + PSU
 
 The circuit consists of a boost converter which steps up the supply voltage to 170VDC. Such voltage is sufficient for ionization of the low-pressure gas mixture inside the tube at room temperature (without the need of white-hot cathode).
 
@@ -49,7 +49,8 @@ Note author's love for hardcore poetry insertion.
 
 ## Dual tube adapter
 
-Someone must hold the tubes in place so here it is:
+Someone must hold the tubes in place so here it is: ([see schematic](/files/NixieDriverTwoTubesSockets/NixieDriverTwoTubesSockets_Schematic.pdf))
+
 <p align="center">
   <img src="/files/NixieDriverTwoTubes/img/NixieDriverTwoTubes_FRONT.png" alt="Tube holder front" width="49%"/>
   <img src="/files/NixieDriverTwoTubes/img/NixieDriverTwoTubes_BACK.png" alt="Tube holder back" width="49%"/>
@@ -57,6 +58,28 @@ Someone must hold the tubes in place so here it is:
 Holes in pcb in the middle of the tubes' footprints are an answer to the glass short feature at the base, a remainder after sealing process.
 Other holes increase versatility in case someone wished to insert leds in them to achieve obligatory flashing in the space between glowing numerals.
 Note the attempt to match writing on the pcb to native Muttersprache of the late glassblowers responsible for birthing of IN-12s.
+
+### Dual tube adapter w/ sockets
+
+Socket adaptation requires different footprint and much denser layout.
+
+<p align="center">
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_FRONT.png" alt="NixieDriverTwoTubesSockets_FRONT" width="33%"/>
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_BACK.png" alt="NixieDriverTwoTubesSockets_BACK" width="33%"/>
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_DIMs.png" alt="NixieDriverTwoTubesSockets_DIMs" width="18%"/>
+</p>
+6 layers, yes:
+<p align="center">
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_FCu.png" alt="Image 1" width="16%"/>
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_In1Cu.png" alt="Image 2" width="16%"/>
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_In2Cu.png" alt="Image 2" width="16%"/>
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_In3Cu.png" alt="Image 2" width="16%"/>
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_In4Cu.png" alt="Image 2" width="16%"/>
+  <img src="/files/NixieDriverTwoTubesSockets/img/NixieDriverTwoTubesSockets_BCu.png" alt="Image 1" width="16%"/>
+</p>
+
+
+
 
 ---
 <!-- 
