@@ -116,28 +116,37 @@ For dual tube version
 ## First try
 
 Ok. so let's try single phase boost topology in Constant Current Mode.
-![Boost converter schematic](/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png)
 
-In that case helpful can be ic dedicated to boost converter control such as [UCC38xx](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family from TI:
+<p align="center">
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png" alt="Boost converter schematic" width="75%"/>
+</p>
 
-![Driver schematic](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDriver.png)
+In that case helpful can be ic dedicated to boost converter control such as [UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family from TI:
+
+<p align="center">
+  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDriver.png" alt="Driver schematic" width="75%"/>
+</p>
 
 ---
 
 ### Duty cycle and PWM Controller
 
+<p align="center">
+  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SimpAppDiag.png" alt="UCC380X Simplified Application Diagram" width="50%"/>
+</p>
+
 Assuming 80% efficiency, DC needed is given by 
 
 ```math
-U_{OUT} = \frac{U_{IN} \cdot \eta}{1-D}  \implies  D = 1 - \frac{12V \cdot 0.8}{170V} \approx \mathbf{0.944}
+U_{out} = \frac{U_{in} \cdot \eta}{1-D}  \implies  D = 1 - \frac{12V \cdot 0.8}{170V} \approx \mathbf{0.944}
 ```
 
-so half of the [UCC38xx](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family is already out.
+so half of the [UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family is already out.
 
 Let's see:
 <!-- <img src="NixieDriverModule_UCC38xxComp.png" alt="UCC38xx family comparison" > -->
 ![UCC38XX family](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_UCC38xxComp.png)
-After DC calculation, only '00, '02 and '03 are left. As input voltage is 12V, let's look at histeretic UnderVoltage LockOut thresholds. '02 version will never even turn on and '03's UVLO range is far too low to be usable.
+After DC calculation, only '0, '2 and '3 are left. As input voltage is 12V, let's look at histeretic UnderVoltage LockOut thresholds. '2 version will never even turn on and '3's UVLO range is far too low to provide any protection.
 
 > That leaves [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) as the last chip standing.
 
@@ -160,10 +169,10 @@ f = \frac{1.5}{RC} = \frac{1.5}{\mathbf{41.2k \Omega} \cdot \mathbf{330pF}} \app
 Mean output current:
 
 ```math
-I_{OUT} = \frac{1}{T} \int_{0}^{T} i_{OUT} \, dt = \frac{1}{T} (\frac{1}{2} \Delta i_{OUT} (1-D)T + i_{MIN}T) = \frac{1}{2} \Delta i_{OUT} (1-D) + i_{MIN}
+I_{out} = \frac{1}{T} \int_{0}^{T} i_{out} \, dt = \frac{1}{T} (\frac{1}{2} \Delta i_{out} (1-D)T + i_{min}T) = \frac{1}{2} \Delta i_{out} (1-D) + i_{min}
 ```
 
-As voltage across the inductor $` U_{L} = L \cdot \frac{\Delta i_{L}}{t_{ON}} `$ and duty cycle $` D = \frac{t_{ON}}{T} = t_{ON} \cdot f `$, ripple current through the inductor is:
+As voltage across the inductor $` U_{L} = L \cdot \frac{\Delta i_{L}}{t_{on}} `$ and duty cycle $` D = \frac{t_{on}}{T} = t_{on} \cdot f `$, ripple current through the inductor is:
 
 ```math
 \Delta i_{L} = \frac{U_{L} D}{f \cdot L}
@@ -172,13 +181,13 @@ As voltage across the inductor $` U_{L} = L \cdot \frac{\Delta i_{L}}{t_{ON}} `$
 so the mean output current:
 
 ```math
-I_{OUT} = \frac{U_{IN} D (1-D)}{2 f L}  + i_{MIN}
+I_{out} = \frac{U_{in} D (1-D)}{2 f L}  + i_{min}
 ```
 
-For continuous inductor current, **minimum current must be positive**. The lower bound on inductance is then given by:
+For continuous inductor current, **minimum current must be positive** ( $`i_{min} > 0`$ ). The lower bound on inductance is then given by:
 
 ```math
-L \gt \frac{D \cdot U_{IN} \cdot (1-D) }{ 2 \cdot f \cdot I_{OUT}} \approx 239.6 \mu H \implies \mathbf{L = 330 \mu H}
+L \gt \frac{D \cdot U_{in} \cdot (1-D) }{ 2 \cdot f \cdot I_{out}} \approx 239.6 \mu H \implies \mathbf{L = 330 \mu H}
 ```
 
 Inductor's ripple current:
@@ -190,7 +199,7 @@ Inductor's ripple current:
 Maximum current through the inductor:
 
 ```math
-\mathbf{i_{L, MAX}} = i_{min} + \Delta i_{L} = I_{OUT} - \frac{1}{2} \Delta i_{L}(1 - D) + \Delta i_{L} \approx \mathbf{314.39 mA}
+\mathbf{i_{L, max}} = i_{min} + \Delta i_{L} = I_{out} - \frac{1}{2} \Delta i_{L}(1 - D) + \Delta i_{L} \approx \mathbf{314.39 mA}
 ```
 is also the maximum current through the switch.
 
@@ -223,14 +232,17 @@ To choose the diode, it is necessary to know the max current it will have to han
 - **200 V** $`V_{DS}`$
 - **90 mΩ** max $`R_{DS(on)}`$
 - **15.2 A** $`I_{D}`$
+- 2.2 Ω typ $`R_{G}`$
+- **11.6 nC** max $`Q_{g}`$
 
 ---
 
 ### Output capacitor
+
 To filter the output signal, let's use capacitance of
 
 ```math
-\Delta U_{OUT} = \frac{D \cdot I_{OUT}}{C_{OUT}} \implies \mathbf{C_{OUT}} = \frac{0.9298 \cdot 12 mA}{0.1 V} \approx \mathbf{1.01 \mu F}
+\Delta U_{out} = \frac{D \cdot I_{out}}{C_{out}} \implies \mathbf{C_{out}} = \frac{0.9298 \cdot 12 mA}{0.1 V} \approx \mathbf{1.01 \mu F}
 ```
 
 > [C5750X7R2E105K230KA](https://www.tme.eu/Document/3927045cdc4027c1c18ebf074683adec/c-series.pdf) (2220) from TDK's "C series"
@@ -240,27 +252,51 @@ To filter the output signal, let's use capacitance of
 
 Note the ±15% temperature coefficient (capacitance change) over the whole temp. range ( –55 to +125 °C )
 
+In the design, two 2220 footprints were used to accomodate various capacitor configurations.
+
 ---
 
 ### Current sensing network
-A 1-V (typical) cycle-by-cycle current limit threshold is incorporated into the UCC280x family. Resistors R14
-and R15 bias the actual current sense resistor voltage up, allowing a small current sense amplitude to be used. 
 
-max 323.9mA over 0.1R is 32.39mV so 967.61mV offset is needed
+A 1-V (typical) cycle-by-cycle current limit threshold is incorporated into the [UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family. Resistors R9
+and R11 bias the actual current sense resistor voltage up, allowing a small current sense amplitude to be used.
+
+> [ERJ-8BWFR100V](https://industrial.panasonic.com/cdbs/www-data/pdf/RDN0000/AOA0000C313.pdf) (1206) thick film chip resistor from PANASONIC
+
+- **0.1 Ω** ±1%
+- 100ppm/°C
+
+
+
+max 314.39 mA over 0.1R is 31.439mV so 968.561 mV offset is needed
 
 
 ```math
-V_{OFFSET} = \frac{R15}{R14 + R15} \cdot V_{REF}
+U_{offset} = \frac{R9}{R11 + R9} \cdot U_{ref} \implies \mathbf{\frac{R11}{R9}} = \frac{5 V}{0.968561 V} - 1 = 4.16229747
 ```
+
 TODO: resistor values
 
 ---
 
 ### Voltage feedback loop
 
-TODO: 
+<p align="center">
+  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FunctionalDiag.png" alt="UCC380X Functional Diagram" width="75%"/>
+</p>
 
-![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchCtrlNote.png)
+Voltage at FB pin is compared to reference halved so a voltage divider of
+
+```math
+U_{ref} = \frac{U_{out} \cdot R5}{R5 + R4} \implies \mathbf{\frac{R4}{R5}} = \frac{170 V}{2.5 V} - 1 = 67 = \mathbf{\frac{514.56 k\Omega}{7.68 k\Omega}}
+```
+
+is needed. In practice, choosing from ±1% E96 series:
+
+> **R4 = 523 kΩ** ±1% and 
+> **R5 = 7.68 kΩ** ±1%
+
+This tolerance implies output voltage range of [169.3 V; 176.2 V] and about 300-μA leakage current.
 
 ---
 
@@ -287,7 +323,7 @@ TODO:  y LaTeX does not work in md?!
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDemux.png)
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchTransArray.png)
 
-
+![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchCtrlNote.png)
 
 ![](img/NixieDriverTwoTubes_ANGLE.png)
 
