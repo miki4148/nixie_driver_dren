@@ -9,7 +9,7 @@ A versatile and customizable driver for Nixie tube clocks. This project focuses 
 
 - **Modular design**: Interchangeable pieces with efficient management of high voltages required by nixie tubes.
 - **Customizable Firmware**: Adjust timing  of various displayed things at will.
-- **Support for Various Tubes**: Compatible with IN-12A, IN-12B and more.
+- **Support for Various Tubes**: Compatible with [IN-12A](https://www.tube-tester.com/sites/nixie/dat_arch/IN-12A_IN-12B_03.pdf), [IN-12B](https://www.tube-tester.com/sites/nixie/dat_arch/IN-12A_IN-12B_03.pdf) and more.
 - **Easy Assembly**: Simple PCB design with detailed instructions.
 - **Real-Time Clock Integration**: In the future, RTC modules may be integrated into the project.
 
@@ -19,13 +19,13 @@ A versatile and customizable driver for Nixie tube clocks. This project focuses 
 
 ### Components
 
-1. Nixie Tubes (e.g. IN-12A or IN-12B)
+1. Nixie Tubes (e.g. [IN-12A](https://www.tube-tester.com/sites/nixie/dat_arch/IN-12A_IN-12B_03.pdf) or [IN-12B](https://www.tube-tester.com/sites/nixie/dat_arch/IN-12A_IN-12B_03.pdf))
 2. Regulated Power Supply (12V DC output)
 3. Microcontroller (e.g. STM32 family)
 4. Maybe RTC Module? (e.g. DS3231)
 5. Darlington Arrays (e.g. SN75468)
 6. Demultiplexers (e.g. CD4028B)
-7. Boost controller (UCC38XX family)
+7. Boost controller ([UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family)
 8. Resistors, Capacitors, Connectors etc.
 9. PCB (Custom-designed for this project)
 
@@ -33,11 +33,20 @@ A versatile and customizable driver for Nixie tube clocks. This project focuses 
 
 The circuit consists of a boost converter which steps up the supply voltage to 170VDC. Such voltage is sufficient for ionization of the low-pressure gas mixture inside the tube at room temperature (without the need of white-hot cathode).
 
-After long battle against procrastination, layout for the driver board emerged. Detailed description and schematic will follow in subsequent sections.
+After long battle against procrastination, layout for the driver board emerged (see [driver schematic](/files/NixieDriverEvenSmallerNoDot/NixieDriverEvenSmallerNoDot.pdf)). Detailed description will follow in subsequent sections.
 
 <p align="center">
-  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_FRONT.png" alt="Image 1" width="49%"/>
-  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_BACK.png" alt="Image 2" width="49%"/>
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FRONT.png" alt="Image 1" width="49%"/>
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_BACK.png" alt="Image 2" width="49%"/>
+</p>
+
+<p align="center">
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FCu.png" alt="FCu" width="16%"/>
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_InnerCu.png" alt="InnerCu" width="16%"/>
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_BCu.png" alt="BCu" width="16%"/>
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_DIMs.png" alt="Dimensions" width="16%"/>
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FabFront.png" alt="FFab" width="16%"/>
+  <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FabBack.png" alt="BFab" width="16%"/>
 </p>
 
 Insulation Displacement Cable connector was chosen as the main medium of communication w/ the micro. This was a direct result of author's recent traumatic experiances and many hours of fruitless work trying to wire previous device using old solid-copper wires which were nearly unsolderable and brittle beyond comprehension. So ribbon cable it is.
@@ -49,7 +58,7 @@ Note author's love for hardcore poetry insertion.
 
 ## Dual tube adapter
 
-Someone must hold the tubes in place so here it is: ([see schematic](/files/NixieDriverTwoTubesSockets/NixieDriverTwoTubesSockets_Schematic.pdf))
+Someone must hold the tubes in place so here it is: (see [adapter schematic](/files/NixieDriverTwoTubesSockets/NixieDriverTwoTubesSockets_Schematic.pdf))
 
 <p align="center">
   <img src="/files/NixieDriverTwoTubes/img/NixieDriverTwoTubes_FRONT.png" alt="Tube holder front" width="49%"/>
@@ -111,17 +120,23 @@ For dual tube version
 3. Output regulation method: **PWM**
 4. Power delivered to the load: **2.04mW** (4 symbols, up to 3mA per cathode at 170V);
 5. Small size: 50mm x 50mm boards (cheap, easy to throw away)
-6. 22 cathodes, 2 out of which will stay on and **2 decimal points w/ independent control**
+6. 22 cathodes, 2 out of which will stay on and **2 commas w/ independent control**
 
 ## First try
 
-Ok. so let's try single phase boost topology in Constant Current Mode.
+Ok. so let's try single phase boost topology in Constant Current Mode. 
+
+In that case helpful can be ic dedicated to boost converter control such as [UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family from TI:
+
+<p align="center">
+  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SimpAppDiag.png" alt="UCC380X Simplified Application Diagram" width="50%"/>
+</p>
 
 <p align="center">
   <img src="/files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchBoost.png" alt="Boost converter schematic" width="75%"/>
 </p>
 
-In that case helpful can be ic dedicated to boost converter control such as [UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family from TI:
+
 
 <p align="center">
   <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SchDriver.png" alt="Driver schematic" width="75%"/>
@@ -130,10 +145,6 @@ In that case helpful can be ic dedicated to boost converter control such as [UCC
 ---
 
 ### Duty cycle and PWM Controller
-
-<p align="center">
-  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_SimpAppDiag.png" alt="UCC380X Simplified Application Diagram" width="50%"/>
-</p>
 
 Assuming 80% efficiency, DC needed is given by 
 
@@ -145,7 +156,7 @@ so half of the [UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family i
 
 Let's see:
 <!-- <img src="NixieDriverModule_UCC38xxComp.png" alt="UCC38xx family comparison" > -->
-![UCC38XX family](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_UCC38xxComp.png)
+![UCC380X family](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_UCC38xxComp.png)
 After DC calculation, only '0, '2 and '3 are left. As input voltage is 12V, let's look at histeretic UnderVoltage LockOut thresholds. '2 version will never even turn on and '3's UVLO range is far too low to provide any protection.
 
 > That leaves [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) as the last chip standing.
@@ -160,7 +171,9 @@ As described in [UCC3800](https://www.ti.com/lit/ds/symlink/ucc3800.pdf)'s datas
 f = \frac{1.5}{RC} = \frac{1.5}{\mathbf{41.2k \Omega} \cdot \mathbf{330pF}} \approx 110.33kHz
 ```
 
-> Probably some **C0G** cap and a somewhat stable ±1% resistor
+> C15 = **330 pF** C0G
+> R14 = **41.2 kΩ** ±1%
+> R15 = 0 Ω
 
 ---
 
@@ -239,15 +252,15 @@ To choose the diode, it is necessary to know the max current it will have to han
 
 ### Output capacitor
 
-To filter the output signal, let's use capacitance of
+To filter the output signal, let's use capacitance of:
 
 ```math
-\Delta U_{out} = \frac{D \cdot I_{out}}{C_{out}} \implies \mathbf{C_{out}} = \frac{0.9298 \cdot 12 mA}{0.1 V} \approx \mathbf{1.01 \mu F}
+\Delta U_{out} = \frac{I_{out}}{C_{out} \cdot f} \implies \mathbf{C_{out}} \gt \frac{12 mA}{0.1 V \cdot 110.33 kHz} \approx \mathbf{1.09 \mu F}
 ```
 
 > [C5750X7R2E105K230KA](https://www.tme.eu/Document/3927045cdc4027c1c18ebf074683adec/c-series.pdf) (2220) from TDK's "C series"
-- **1μF** ± 10%
-- **250V** rated DC voltage
+- **2 μF** ± 10%
+- **250 V** rated DC voltage
 - **X7R** dielectric material
 
 Note the ±15% temperature coefficient (capacitance change) over the whole temp. range ( –55 to +125 °C )
@@ -257,6 +270,10 @@ In the design, two 2220 footprints were used to accomodate various capacitor con
 ---
 
 ### Current sensing network
+
+<p align="center">
+  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FunctionalDiag_CS.png" alt="Current Sensing" width="75%"/>
+</p>
 
 A 1-V (typical) cycle-by-cycle current limit threshold is incorporated into the [UCC380x](https://www.ti.com/lit/ds/symlink/ucc3800.pdf) family. Resistors R9
 and R11 bias the actual current sense resistor voltage up, allowing a small current sense amplitude to be used.
@@ -272,29 +289,33 @@ max 314.39 mA over 0.1R is 31.439mV so 968.561 mV offset is needed
 
 
 ```math
-U_{offset} = \frac{R9}{R11 + R9} \cdot U_{ref} \implies \mathbf{\frac{R11}{R9}} = \frac{5 V}{0.968561 V} - 1 = 4.16229747
+U_{offset} = \frac{R9}{R11 + R9} \cdot U_{ref} \implies \mathbf{\frac{R11}{R9}} = \frac{5 V}{0.968561 V} - 1 = 4.1623
 ```
 
-TODO: resistor values
+> R5 = **4.12 kΩ** ±1%
+> R10 = **1 kΩ** ±1%
+> R12 = **390 kΩ** ±1%
+
+TODO:
 
 ---
 
 ### Voltage feedback loop
 
 <p align="center">
-  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FunctionalDiag.png" alt="UCC380X Functional Diagram" width="75%"/>
+  <img src="files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FunctionalDiag_FB.png" alt="Voltage FeedBack" width="75%"/>
 </p>
 
-Voltage at FB pin is compared to reference halved so a voltage divider of
+Voltage at FB pin is compared to **reference halved** so a voltage divider of:
 
 ```math
-U_{ref} = \frac{U_{out} \cdot R5}{R5 + R4} \implies \mathbf{\frac{R4}{R5}} = \frac{170 V}{2.5 V} - 1 = 67 = \mathbf{\frac{514.56 k\Omega}{7.68 k\Omega}}
+\frac{U_{ref}}{2} = \frac{U_{out} \cdot R3}{R3 + R2} \implies \mathbf{\frac{R2}{R3}} = \frac{170 V}{2.5 V} - 1 = 67 = \mathbf{\frac{514.56 k\Omega}{7.68 k\Omega}}
 ```
 
 is needed. In practice, choosing from ±1% E96 series:
 
-> **R4 = 523 kΩ** ±1% and 
-> **R5 = 7.68 kΩ** ±1%
+> **R2 = 523 kΩ** ±1%
+> **R3 = 7.68 kΩ** ±1%
 
 This tolerance implies output voltage range of [169.3 V; 176.2 V] and about 300-μA leakage current.
 
@@ -314,7 +335,7 @@ As we can see, all noise from FET turning on/off was omitted as well as parasiti
 
 ## Miscellaneous
 
-TODO:  y LaTeX does not work in md?!
+TODO:  y LaTeX does not work in md on mobile?!
 
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_AllLayers.png)
 
@@ -327,12 +348,7 @@ TODO:  y LaTeX does not work in md?!
 
 ![](img/NixieDriverTwoTubes_ANGLE.png)
 
-![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_ANGLE.png)
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_BACK_blank.png)
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_FRONT_blank.png)
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_LEFT.png)
 ![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverEvenSmallerNoDot_TOP.png)
-
-![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_DIMs.png)
-![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FabBack.png)
-![](files/NixieDriverEvenSmallerNoDot/img/NixieDriverModule_FabFront.png)
